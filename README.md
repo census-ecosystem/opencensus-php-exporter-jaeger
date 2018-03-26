@@ -69,19 +69,7 @@ Apache 2.0 - See [LICENSE](LICENSE) for more information.
 
 This is not an official Google product.
 
+[exporter-interface]: https://github.com/census-instrumentation/opencensus-php/blob/master/src/Trace/Exporter/ExporterInterface.php
 [census-org]: https://github.com/census-instrumentation
-[api-docs]: https://census-instrumentation.github.io/opencensus-php/api
-[integration-docs]: https://census-instrumentation.github.io/opencensus-php
 [composer]: https://getcomposer.org/
-[pecl]: https://pecl.php.net/
-[never-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[always-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[qps-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[probability-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[echo-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/EchoExporter.html
-[file-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/FileExporter.html
-[stackdriver-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/StackdriverExporter.html
-[logger-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/LoggerExporter.html
-[null-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/NullExporter.html
-[zipkin-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/ZipkinExporter.html
 [semver]: http://semver.org/
