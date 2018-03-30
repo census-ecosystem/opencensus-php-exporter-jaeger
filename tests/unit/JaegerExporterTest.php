@@ -18,12 +18,43 @@
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
 use OpenCensus\Trace\Exporter\JaegerExporter;
+use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\MessageEvent;
+use OpenCensus\Trace\Span as OCSpan;
+use Prophecy\Argument;
+use Jaeger\Thrift\Span;
+use Jaeger\Thrift\Agent\AgentIf;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group trace
+ */
 class JaegerExporterTest extends TestCase
 {
-    public function testBasic()
+    private $client;
+
+    public function setUp()
     {
-        $this->markTestSkipped();
+        parent::setUp();
+        $this->client = $this->prophesize(AgentIf::class);
+    }
+
+    public function testFormatsTrace()
+    {
+        $exporter = new JaegerExporter('test-agent', ['client' => $this->client->reveal()]);
+        $span = new OCSpan([
+            'name' => 'span-name',
+            'traceId' => 'aaa',
+            'spanId' => 'bbb',
+            'startTime' => new \DateTime(),
+            'endTime' => new \DateTime()
+        ]);
+        $this->assertTrue($exporter->export([$span->spanData()]));
+    }
+
+    public function testEmptyTrace()
+    {
+        $exporter = new JaegerExporter('test-agent', ['client' => $this->client->reveal()]);
+        $this->assertFalse($exporter->export([]));
     }
 }

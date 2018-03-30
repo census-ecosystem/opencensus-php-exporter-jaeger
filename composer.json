@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
         "php": ">=5.6",
-        "opencensus/opencensus": "^0.2",
+        "opencensus/opencensus": "dev-master",
         "apache/thrift": "^0.11"
     },
     "require-dev": {
@@ -21,7 +21,13 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "OpenCensus\\Trace\\": "src/Trace/"
+            "OpenCensus\\Trace\\Exporter\\": "src/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/census-instrumentation/opencensus-php"
+        }
+    ]
 }
