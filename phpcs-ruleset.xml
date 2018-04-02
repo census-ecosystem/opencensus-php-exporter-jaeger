@@ -7,5 +7,6 @@
   <rule ref="PSR1.Files.SideEffects">
     <exclude-pattern>src/JaegerExporter.php</exclude-pattern>
     <exclude-pattern>src/Jaeger/SpanConverter.php</exclude-pattern>
+    <exclude-pattern>src/Jaeger/UDPClient.php</exclude-pattern>
   </rule>
 </ruleset>

@@ -31,7 +31,7 @@ initialization:
 
 ```php
 $options = [];
-$exporter = new JaegerExporter('my-service-name');
+$exporter = new JaegerExporter('my-service-name', $options);
 ```
 
 The following options are available:
@@ -41,7 +41,7 @@ The following options are available:
 | `host` | "127.0.0.1" | The TCP IP address to send the UDP request to |
 | `port` | 6931 | The TCP port to send the UDP request to |
 | `tags` | (empty) | An associative array of tags to mark this process with |
-| `client` | null | Optional `AgentIf` interface to use for testing |
+| `client` | null | Optional [`AgentIf`][agent-interface] interface to use for testing |
 
 ## Versioning
 
@@ -87,4 +87,5 @@ This is not an official Google product.
 [exporter-interface]: https://github.com/census-instrumentation/opencensus-php/blob/master/src/Trace/Exporter/ExporterInterface.php
 [census-org]: https://github.com/census-instrumentation
 [composer]: https://getcomposer.org/
+[agent-interface]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger/blob/master/src/Thrift/Agent.php#L19
 [semver]: http://semver.org/
