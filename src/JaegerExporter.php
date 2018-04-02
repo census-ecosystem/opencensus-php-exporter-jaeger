@@ -17,18 +17,15 @@
 
 namespace OpenCensus\Trace\Exporter;
 
-require_once 'Thrift/Agent.php';
-require_once 'Thrift/Types.php';
+require_once __DIR__ . '/Thrift/Agent.php';
+require_once __DIR__ . '/Thrift/Types.php';
 
 use OpenCensus\Trace\Exporter\Jaeger\SpanConverter;
+use OpenCensus\Trace\Exporter\Jaeger\UDPClient;
 
 use Jaeger\Thrift\Agent\AgentIf;
-use Jaeger\Thrift\Agent\AgentClient;
 use Jaeger\Thrift\Batch;
 use Jaeger\Thrift\Process;
-
-use Thrift\Protocol\TCompactProtocol;
-use Thrift\Transport\TMemoryBuffer;
 
 /**
  * This implementation of the ExporterInterface talks to a Jaeger Agent backend
@@ -66,6 +63,7 @@ class JaegerExporter implements ExporterInterface
      *     @type int $port The UDP port of the Jaeger service. **Defaults to*
      *           6831.
      *     @type array $tags Associative array of key => value
+     *     @type AgentIf $client Agent interface for testing
      * }
      */
     public function __construct($serviceName, array $options = [])
@@ -104,32 +102,13 @@ class JaegerExporter implements ExporterInterface
             return false;
         }
 
-        // Thrift doesn't provide a UDP protocol, so write into a buffer and
-        // then manually send the data over UDP via a socket.
-        $buffer = new TMemoryBuffer();
-        $protocol = new TCompactProtocol($buffer);
-        $client = new AgentClient(null, $protocol);
+        $client = $this->client ?: new UDPClient($this->host, $this->port);
         $batch = new Batch([
             'process' => $this->process,
             'spans' => $spans
         ]);
 
         $client->emitBatch($batch);
-        $data = $buffer->getBuffer();
-
-        try {
-            $dataSize = strlen($data);
-            return socket_sendto(
-                $socket,
-                $data,
-                $dataSize,
-                0,
-                $this->host,
-                $this->port
-            ) === $dataSize;
-        } finally {
-            socket_close($socket);
-        }
-        return false;
+        return true;
     }
 }

@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
+require_once 'src/Thrift/Agent.php';
+
 use OpenCensus\Trace\Exporter\JaegerExporter;
 use OpenCensus\Trace\Annotation;
 use OpenCensus\Trace\MessageEvent;
@@ -41,7 +43,12 @@ class JaegerExporterTest extends TestCase
 
     public function testFormatsTrace()
     {
-        $exporter = new JaegerExporter('test-agent', ['client' => $this->client->reveal()]);
+        $this->client->emitBatch(
+            Argument::any()
+        )->willReturn(true)->shouldBeCalled();
+        $exporter = new JaegerExporter('test-agent', [
+            'client' => $this->client->reveal()
+        ]);
         $span = new OCSpan([
             'name' => 'span-name',
             'traceId' => 'aaa',
@@ -54,7 +61,9 @@ class JaegerExporterTest extends TestCase
 
     public function testEmptyTrace()
     {
-        $exporter = new JaegerExporter('test-agent', ['client' => $this->client->reveal()]);
+        $exporter = new JaegerExporter('test-agent', [
+            'client' => $this->client->reveal()
+        ]);
         $this->assertFalse($exporter->export([]));
     }
 }
