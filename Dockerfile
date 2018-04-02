@@ -41,3 +41,6 @@ RUN EXPECTED_SIGNATURE=$(curl -f https://composer.github.io/installer.sig) && \
 RUN php composer.phar install && \
     vendor/bin/phpcs --standard=./phpcs-ruleset.xml && \
     vendor/bin/phpunit
+
+RUN pecl install opencensus-alpha && \
+    php -dextension=opencensus.so vendor/bin/phpunit
