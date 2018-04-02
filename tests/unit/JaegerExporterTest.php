@@ -45,7 +45,7 @@ class JaegerExporterTest extends TestCase
     {
         $this->client->emitBatch(
             Argument::any()
-        )->willReturn(true)->shouldBeCalled();
+        )->willReturn(null)->shouldBeCalled();
         $exporter = new JaegerExporter('test-agent', [
             'client' => $this->client->reveal()
         ]);

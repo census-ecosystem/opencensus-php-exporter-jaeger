@@ -95,17 +95,10 @@ class JaegerExporter implements ExporterInterface
             return false;
         }
 
-        $spans = array_map([SpanConverter::class, 'convertSpan'], $spans);
-
-        $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-        if ($socket === null) {
-            return false;
-        }
-
         $client = $this->client ?: new UDPClient($this->host, $this->port);
         $batch = new Batch([
             'process' => $this->process,
-            'spans' => $spans
+            'spans' => array_map([SpanConverter::class, 'convertSpan'], $spans)
         ]);
 
         $client->emitBatch($batch);
