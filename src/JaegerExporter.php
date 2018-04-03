@@ -17,7 +17,15 @@
 
 namespace OpenCensus\Trace\Exporter;
 
-use OpenCensus\Trace\Tracer\TracerInterface;
+require_once __DIR__ . '/Thrift/Agent.php';
+require_once __DIR__ . '/Thrift/Types.php';
+
+use OpenCensus\Trace\Exporter\Jaeger\SpanConverter;
+use OpenCensus\Trace\Exporter\Jaeger\UDPClient;
+
+use Jaeger\Thrift\Agent\AgentIf;
+use Jaeger\Thrift\Batch;
+use Jaeger\Thrift\Process;
 
 /**
  * This implementation of the ExporterInterface talks to a Jaeger Agent backend
@@ -26,14 +34,74 @@ use OpenCensus\Trace\Tracer\TracerInterface;
 class JaegerExporter implements ExporterInterface
 {
     /**
+     * @var string
+     */
+    protected $host;
+
+    /**
+     * @var int
+     */
+    protected $port;
+
+    /**
+     * @var Process
+     */
+    protected $process;
+
+    /**
+     * @var AgentIf
+     */
+    protected $client;
+
+    /**
+     * Create a new Jaeger Exporter.
+     *
+     * @param string $serviceName Name of the traced process/service
+     * @param array $options [optional] {
+     *     @type string $host The ip address of the Jaeger service. **Defaults
+     *           to** '127.0.0.1'.
+     *     @type int $port The UDP port of the Jaeger service. **Defaults to*
+     *           6831.
+     *     @type array $tags Associative array of key => value
+     *     @type AgentIf $client Agent interface for testing
+     * }
+     */
+    public function __construct($serviceName, array $options = [])
+    {
+        $options += [
+            'host' => '127.0.0.1',
+            'port' => 6831,
+            'tags' => [],
+            'client' => null
+        ];
+        $this->host = $options['host'];
+        $this->port = (int) $options['port'];
+        $this->process = new Process([
+            'serviceName' => $serviceName,
+            'tags' => SpanConverter::convertTags($options['tags'])
+        ]);
+        $this->client = $options['client'];
+    }
+
+    /**
      * Report the provided Trace to a backend.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData $spans
      * @return bool
      */
-    public function report(TracerInterface $tracer)
+    public function export(array $spans)
     {
-        // TODO: Implement this
-        return false;
+        if (empty($spans)) {
+            return false;
+        }
+
+        $client = $this->client ?: new UDPClient($this->host, $this->port);
+        $batch = new Batch([
+            'process' => $this->process,
+            'spans' => array_map([SpanConverter::class, 'convertSpan'], $spans)
+        ]);
+
+        $client->emitBatch($batch);
+        return true;
     }
 }

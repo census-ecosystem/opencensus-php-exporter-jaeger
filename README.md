@@ -1,11 +1,16 @@
 # OpenCensus Jaeger Exporter for PHP
 
 This library provides an [`ExporterInterface`][exporter-interface] for exporting
-Trace data to a Jaeger instance.
+Trace data to a Jaeger instance using Thrift (Compact Protocol) over UDP.
 
 [![CircleCI](https://circleci.com/gh/census-instrumentation/opencensus-php-exporter-jaeger.svg?style=svg)](https://circleci.com/gh/census-instrumentation/opencensus-php-exporter-jaeger)
-[![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus-exporter-jaeger.svg)](https://packagist.org/packages/opencensus/opencensus)
+[![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus-exporter-jaeger.svg)](https://packagist.org/packages/opencensus/opencensus-exporter-jaeger)
 ![PHP-Version](https://img.shields.io/packagist/php-v/opencensus/opencensus-exporter-jaeger.svg)
+
+## Requirements
+
+* PHP >= 5.6
+* 64-bit version of PHP
 
 ## Installation & basic usage
 
@@ -26,7 +31,22 @@ Trace data to a Jaeger instance.
 
 ## Customization
 
-TODO: Fill out these instructions
+You may provide an associative array of options to the `JaegerExporter` at
+initialization:
+
+```php
+$options = [];
+$exporter = new JaegerExporter('my-service-name', $options);
+```
+
+The following options are available:
+
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `host` | "127.0.0.1" | The TCP IP address to send the UDP request to |
+| `port` | 6931 | The TCP port to send the UDP request to |
+| `tags` | (empty) | An associative array of tags to mark this process with |
+| `client` | null | Optional [`AgentIf`][agent-interface] interface to use for testing |
 
 ## Versioning
 
@@ -72,4 +92,5 @@ This is not an official Google product.
 [exporter-interface]: https://github.com/census-instrumentation/opencensus-php/blob/master/src/Trace/Exporter/ExporterInterface.php
 [census-org]: https://github.com/census-instrumentation
 [composer]: https://getcomposer.org/
+[agent-interface]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger/blob/master/src/Thrift/Agent.php#L19
 [semver]: http://semver.org/

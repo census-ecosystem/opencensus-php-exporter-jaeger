@@ -25,14 +25,6 @@ steps:
     waitFor: ['-']
     id: php72-zts
   - name: gcr.io/cloud-builders/docker
-    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/php-stackdriver/php71-32bit', '.']
-    waitFor: ['-']
-    id: php71-32bit
-  - name: gcr.io/cloud-builders/docker
-    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/php-stackdriver/php70-32bit', '.']
-    waitFor: ['-']
-    id: php70-32bit
-  - name: gcr.io/cloud-builders/docker
     args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/php-stackdriver/php71-debug', '.']
     waitFor: ['-']
     id: php71-debug
