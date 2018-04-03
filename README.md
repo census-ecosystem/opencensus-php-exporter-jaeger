@@ -7,6 +7,11 @@ Trace data to a Jaeger instance using Thrift (Compact Protocol) over UDP.
 [![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus-exporter-jaeger.svg)](https://packagist.org/packages/opencensus/opencensus-exporter-jaeger)
 ![PHP-Version](https://img.shields.io/packagist/php-v/opencensus/opencensus-exporter-jaeger.svg)
 
+## Requirements
+
+* PHP >= 5.6
+* 64-bit version of PHP
+
 ## Installation & basic usage
 
 1. Install the `opencensus/opencensus-exporter-jaeger` package using [composer][composer]:

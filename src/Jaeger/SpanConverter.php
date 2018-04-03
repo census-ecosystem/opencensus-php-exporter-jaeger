@@ -29,6 +29,10 @@ use Jaeger\Thrift\Span;
 use Jaeger\Thrift\Tag;
 use Jaeger\Thrift\TagType;
 
+/**
+ * This class handles converting from the OpenCensus data model into its
+ * Jaeger Thrift representation.
+ */
 class SpanConverter
 {
     /**
