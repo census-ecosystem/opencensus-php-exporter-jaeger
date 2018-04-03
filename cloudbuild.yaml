@@ -28,3 +28,32 @@ steps:
     args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/php-stackdriver/php71-debug', '.']
     waitFor: ['-']
     id: php71-debug
+
+  # integration test
+  - name: gcr.io/cloud-builders/docker
+    args: ['network', 'create', '-d', 'bridge', 'nw_jaeger']
+    id: test-network
+    waitFor: ['-']
+
+  - name: gcr.io/cloud-builders/docker
+    args:
+    - 'run'
+    - '-d'
+    - '-e'
+    - '-p6831:6831/udp'
+    - '-p16686:16686'
+    - '--name=jaeger-server'
+    - '--network=nw_jaeger'
+    - 'jaegertracing/all-in-one:latest'
+    id: jaeger-server
+    waitFor: ['test-network']
+
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/test-runner', '-f', 'Dockerfile.integration',  '.']
+    id: test-build
+    waitFor: ['test-network']
+
+  - name: gcr.io/cloud-builders/docker
+    args: ['run', '--network=nw_jaeger', '-e', 'JAEGER_HOST=jaeger-server', 'gcr.io/$PROJECT_ID/test-runner', 'vendor/bin/phpunit', '--config=./phpunit-integration.xml.dist']
+    id: test-run
+    waitFor: ['test-build', 'jaeger-server']
