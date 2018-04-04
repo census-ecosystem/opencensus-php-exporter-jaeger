@@ -18,7 +18,6 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use OpenCensus\Trace\Exporter\JaegerExporter;
-use OpenCensus\Trace\Exporter\ZipkinExporter;
 use OpenCensus\Trace\Tracer;
 
 $host = getenv('JAEGER_HOST') ?: 'localhost';
