@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Exporter;
+namespace OpenCensus\Tests\Integration\Trace\Exporter;
 
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
