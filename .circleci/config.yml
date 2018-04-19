@@ -1,5 +1,8 @@
 unit-config: &unit-config
   steps:
+    # library requires sockets extension
+    - run: sudo docker-php-ext-install sockets
+
     - checkout
 
     # Download and cache dependencies
