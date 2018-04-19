@@ -12,35 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG BASE_IMAGE
-FROM $BASE_IMAGE
+FROM circleci/php:7.2-node
 
-RUN mkdir -p /build && \
-    apt-get update -y && \
-    apt-get install -y -q --no-install-recommends \
-        build-essential \
-        g++ \
-        gcc \
-        libc-dev \
-        make \
-        autoconf \
-        git \
-        unzip
+COPY . /workspace
+WORKDIR /workspace
 
-COPY . /build/
+RUN sudo chown -R $(whoami) /workspace
 
-WORKDIR /build/
+RUN composer install -n --prefer-dist
 
-RUN EXPECTED_SIGNATURE=$(curl -f https://composer.github.io/installer.sig) && \
-    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-    ACTUAL_SIGNATURE=$(php -r "echo (hash_file('SHA384', 'composer-setup.php'));") && \
-    test $EXPECTED_SIGNATURE = $ACTUAL_SIGNATURE && \
-    php composer-setup.php && \
-    php -r "unlink('composer-setup.php');"
-
-RUN php composer.phar install && \
-    vendor/bin/phpcs --standard=./phpcs-ruleset.xml && \
-    vendor/bin/phpunit
-
-RUN pecl install opencensus-alpha && \
-    php -dextension=opencensus.so vendor/bin/phpunit
+ENTRYPOINT []

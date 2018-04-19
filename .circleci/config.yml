@@ -1,0 +1,67 @@
+unit-config: &unit-config
+  steps:
+    - checkout
+
+    # Download and cache dependencies
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "composer.json" }}
+        # fallback to using the latest cache if no exact match is found
+        - v1-dependencies-
+
+    - run: composer install -n --prefer-dist
+
+    - save_cache:
+        paths:
+          - ./vendor
+        key: v1-dependencies-{{ checksum "composer.json" }}
+
+    # run tests!
+    - run: vendor/bin/phpcs --standard=./phpcs-ruleset.xml
+    - run: vendor/bin/phpunit
+
+version: 2
+jobs:
+  php56:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:5.6-node
+
+  php70:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.0-node
+
+  php71:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.1-node
+
+  php72:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.2-node
+
+  integration:
+    docker:
+      - image: circleci/php:7.2-node
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - run: docker network create -d bridge nw_jaeger
+      - run: docker run -d -p6831:6831/udp -p16686:16686 --name=jaeger-server --network=nw_jaeger jaegertracing/all-in-one:latest
+      - run: docker build -t integration-test .
+      - run: docker run --network=nw_jaeger -e JAEGER_HOST=jaeger-server integration-test vendor/bin/phpunit --config=./phpunit-integration.xml.dist
+
+workflows:
+  version: 2
+  units:
+    jobs:
+      - php56
+      - php70
+      - php71
+      - php72
+      - integration
