@@ -17,7 +17,9 @@ FROM circleci/php:7.2-node
 COPY . /workspace
 WORKDIR /workspace
 
+# current user is circleci
 RUN sudo chown -R $(whoami) /workspace
+RUN sudo docker-php-ext-install sockets
 
 RUN composer install -n --prefer-dist
 
