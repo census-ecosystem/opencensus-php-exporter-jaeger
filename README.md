@@ -3,8 +3,8 @@
 This library provides an [`ExporterInterface`][exporter-interface] for exporting
 Trace data to a Jaeger instance using Thrift (Compact Protocol) over UDP.
 
-[![CircleCI](https://circleci.com/gh/census-instrumentation/opencensus-php-exporter-jaeger.svg?style=svg)](https://circleci.com/gh/census-instrumentation/opencensus-php-exporter-jaeger)
-[![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus-exporter-jaeger.svg)](https://packagist.org/packages/opencensus/opencensus-exporter-jaeger)
+[![CircleCI](https://circleci.com/gh/census-ecosystem/opencensus-php-exporter-jaeger.svg?style=svg)][ci-build]
+[![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus-exporter-jaeger.svg)][packagist-package]
 ![PHP-Version](https://img.shields.io/packagist/php-v/opencensus/opencensus-exporter-jaeger.svg)
 
 ## Requirements
@@ -50,7 +50,7 @@ The following options are available:
 
 ## Versioning
 
-[![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus-exporter-jaeger.svg)](https://packagist.org/packages/opencensus/opencensus-exporter-jaeger)
+[![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus-exporter-jaeger.svg)][packagist-package]
 
 This library follows [Semantic Versioning][semver].
 
@@ -94,3 +94,5 @@ This is not an official Google product.
 [composer]: https://getcomposer.org/
 [agent-interface]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger/blob/master/src/Thrift/Agent.php#L19
 [semver]: http://semver.org/
+[ci-build]: https://circleci.com/gh/census-ecosystem/opencensus-php-exporter-jaeger
+[packagist-package]: https://packagist.org/packages/opencensus/opencensus-exporter-jaeger
