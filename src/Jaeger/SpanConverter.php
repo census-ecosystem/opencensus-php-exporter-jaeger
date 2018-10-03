@@ -160,7 +160,7 @@ class SpanConverter
         );
     }
 
-    const MAX_INT_64s = '9223372036854775807';
+    const MAX_INT_64S = '9223372036854775807';
 
     private static function gmpHalfUuidToInt64s($hex) {
         $dec = 0;
@@ -168,8 +168,8 @@ class SpanConverter
         for ($i = 1; $i <= $len; $i++) {
             $dec = gmp_add($dec, gmp_mul(strval(hexdec($hex[$i - 1])), gmp_pow('16', strval($len - $i))));
         }
-        if (gmp_cmp($dec, self::MAX_INT_64s) > 0) {
-            $dec = gmp_sub(gmp_and($dec, self::MAX_INT_64s), gmp_add(self::MAX_INT_64s, '1'));
+        if (gmp_cmp($dec, self::MAX_INT_64S) > 0) {
+            $dec = gmp_sub(gmp_and($dec, self::MAX_INT_64S), gmp_add(self::MAX_INT_64S, '1'));
         }
         return intval($dec);
     }
@@ -180,8 +180,8 @@ class SpanConverter
         for ($i = 1; $i <= $len; $i++) {
             $dec = bcadd($dec, bcmul(strval(hexdec($hex[$i - 1])), bcpow('16', strval($len - $i))));
         }
-        if (bccomp($dec, self::MAX_INT_64s) > 0) {
-            $dec = bcsub(bcsub($dec, self::MAX_INT_64s), bcadd(self::MAX_INT_64s, '2'));
+        if (bccomp($dec, self::MAX_INT_64S) > 0) {
+            $dec = bcsub(bcsub($dec, self::MAX_INT_64S), bcadd(self::MAX_INT_64S, '2'));
         }
         return intval($dec);
     }
