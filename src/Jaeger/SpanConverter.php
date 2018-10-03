@@ -162,7 +162,8 @@ class SpanConverter
 
     const MAX_INT_64S = '9223372036854775807';
 
-    private static function gmpHalfUuidToInt64s($hex) {
+    private static function gmpHalfUuidToInt64s($hex)
+    {
         $dec = 0;
         $len = strlen($hex);
         for ($i = 1; $i <= $len; $i++) {
@@ -174,7 +175,8 @@ class SpanConverter
         return intval($dec);
     }
 
-    private static function bcHalfUuidToInt64s($hex) {
+    private static function bcHalfUuidToInt64s($hex)
+    {
         $dec = 0;
         $len = strlen($hex);
         for ($i = 1; $i <= $len; $i++) {
