@@ -125,15 +125,28 @@ class SpanConverter
         return (int)((float) $dateTime->format('U.u') * 1000 * 1000);
     }
 
+
+
     /**
      * Split the provided hexId into 2 64-bit integers (16 hex chars each).
      * Returns array of 2 int values.
      */
     private static function convertTraceId($hexId)
     {
+        $method = '';
+        switch (true) {
+            case function_exists('bcadd'):
+                $method = sprintf('\%s::bc_half_uuid_to_int64s', self::class);
+                break;
+            case function_exists('gmp_add'):
+                $method = sprintf('\%s::gmp_half_uuid_to_int64s', self::class);
+                break;
+            default:
+                throw new \Exception('Please install `php-bc` or `php-gmp` extensions for this to work.');
+        }
         return array_slice(
             array_map(
-                'hexdec',
+                $method,
                 str_split(
                     substr(
                         str_pad($hexId, 32, "0", STR_PAD_LEFT),
@@ -145,5 +158,31 @@ class SpanConverter
             0,
             2
         );
+    }
+
+    const MAX_INT_64s = '9223372036854775807';
+
+    private static function gmp_half_uuid_to_int64s($hex) {
+        $dec = 0;
+        $len = strlen($hex);
+        for ($i = 1; $i <= $len; $i++) {
+            $dec = gmp_add($dec, gmp_mul(strval(hexdec($hex[$i - 1])), gmp_pow('16', strval($len - $i))));
+        }
+        if (gmp_cmp($dec, self::MAX_INT_64s) > 0) {
+            $dec = gmp_sub(gmp_and($dec, self::MAX_INT_64s), gmp_add(self::MAX_INT_64s, '1'));
+        }
+        return intval($dec);
+    }
+
+    private static function bc_half_uuid_to_int64s($hex) {
+        $dec = 0;
+        $len = strlen($hex);
+        for ($i = 1; $i <= $len; $i++) {
+            $dec = bcadd($dec, bcmul(strval(hexdec($hex[$i - 1])), bcpow('16', strval($len - $i))));
+        }
+        if (bccomp($dec, self::MAX_INT_64s) > 0) {
+            $dec = bcsub(bcsub($dec, self::MAX_INT_64s), bcadd(self::MAX_INT_64s, '2'));
+        }
+        return intval($dec);
     }
 }
