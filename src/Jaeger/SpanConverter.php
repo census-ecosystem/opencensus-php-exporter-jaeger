@@ -136,10 +136,10 @@ class SpanConverter
         $method = '';
         switch (true) {
             case function_exists('bcadd'):
-                $method = sprintf('\%s::bc_half_uuid_to_int64s', self::class);
+                $method = sprintf('\%s::bcHalfUuidToInt64s', self::class);
                 break;
             case function_exists('gmp_add'):
-                $method = sprintf('\%s::gmp_half_uuid_to_int64s', self::class);
+                $method = sprintf('\%s::gmpHalfUuidToInt64s', self::class);
                 break;
             default:
                 throw new \Exception('Please install `php-bc` or `php-gmp` extensions for this to work.');
@@ -162,7 +162,7 @@ class SpanConverter
 
     const MAX_INT_64s = '9223372036854775807';
 
-    private static function gmp_half_uuid_to_int64s($hex) {
+    private static function gmpHalfUuidToInt64s($hex) {
         $dec = 0;
         $len = strlen($hex);
         for ($i = 1; $i <= $len; $i++) {
@@ -174,7 +174,7 @@ class SpanConverter
         return intval($dec);
     }
 
-    private static function bc_half_uuid_to_int64s($hex) {
+    private static function bcHalfUuidToInt64s($hex) {
         $dec = 0;
         $len = strlen($hex);
         for ($i = 1; $i <= $len; $i++) {
