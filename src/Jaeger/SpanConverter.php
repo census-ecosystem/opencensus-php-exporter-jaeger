@@ -142,20 +142,14 @@ class SpanConverter
     private static function convertTraceId($hexId)
     {
         $method = '';
-        if (self::$preferredBigMathExt === self::BIG_MATH_BC && !function_exists('bcadd')) {
+        if (self::$preferredBigMathExt === self::BIG_MATH_BC) {
             $method = sprintf('\%s::bcHalfUuidToInt64s', self::class);
-        } else {
-            throw new \Exception('For this functionality to work, please install PhP `bcmath` extension, or ' .
-                'swtich to `gmp`.');
         }
-        if (self::$preferredBigMathExt === self::BIG_MATH_GMP && !function_exists('gmp_add')) {
+        if (self::$preferredBigMathExt === self::BIG_MATH_GMP) {
             $method = sprintf('\%s::gmpHalfUuidToInt64s', self::class);
-        } else {
-            throw new \Exception('For this functionality to work, please install PhP `gmp` extension, or ' .
-                'swtich to `bcmath`.');
         }
         if (!$method) {
-            throw new \Exception('No big math `hexdec` method selected. Have you set the proper big math library?');
+            throw new \Exception('No big math `hexdec` method selected. Have you set the proper big math extension?');
         }
         return array_slice(
             array_map(

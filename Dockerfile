@@ -19,7 +19,7 @@ WORKDIR /workspace
 
 # current user is circleci
 RUN sudo chown -R $(whoami) /workspace
-RUN sudo apt-get install -y libgmp-dev re2c libmhash-dev libmcrypt-dev file && sudo ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
+RUN sudo apt-get update && sudo apt-get install -y libgmp-dev re2c libmhash-dev libmcrypt-dev file && sudo ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
 RUN sudo docker-php-ext-install bcmath gmp sockets
 
 RUN composer install -n --prefer-dist
