@@ -2,7 +2,7 @@ unit-config: &unit-config
   steps:
     # library requires sockets extension
     - run: sudo apt-get install -y libgmp-dev re2c libmhash-dev libmcrypt-dev file && sudo ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
-    - run: sudo docker-php-ext-install bcmath gmm sockets
+    - run: sudo docker-php-ext-install bcmath gmp sockets
 
     - checkout
 
