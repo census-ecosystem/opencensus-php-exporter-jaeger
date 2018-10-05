@@ -118,13 +118,13 @@ class SpanConverterTest extends TestCase
             'endTime' => new \DateTime()
         ]);
         SpanConverter::setPreferredBigMathExt(SpanConverter::BIG_MATH_BC);
-        $span = SpanConverter::convertSpan($span->spanData());
-        $this->assertEquals($expectedHigh, $span->traceIdHigh);
-        $this->assertEquals($expectedLow, $span->traceIdLow);
+        $spanData = SpanConverter::convertSpan($span->spanData());
+        $this->assertEquals($expectedHigh, $spanData->traceIdHigh);
+        $this->assertEquals($expectedLow, $spanData->traceIdLow);
         SpanConverter::setPreferredBigMathExt(SpanConverter::BIG_MATH_GMP);
-        $span = SpanConverter::convertSpan($span->spanData());
-        $this->assertEquals($expectedHigh, $span->traceIdHigh);
-        $this->assertEquals($expectedLow, $span->traceIdLow);
+        $spanData = SpanConverter::convertSpan($span->spanData());
+        $this->assertEquals($expectedHigh, $spanData->traceIdHigh);
+        $this->assertEquals($expectedLow, $spanData->traceIdLow);
     }
 
     public function traceIdValues()
