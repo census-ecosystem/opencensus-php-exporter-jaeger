@@ -25,5 +25,9 @@
         "psr-4": {
             "OpenCensus\\Trace\\Exporter\\": "src/"
         }
+    },
+    "scripts": {
+        "pre-package-install": "OpenCensus\\Trace\\Exporter\\Installer::checkPhpExtDependency",
+        "pre-package-update": "OpenCensus\\Trace\\Exporter\\Installer::checkPhpExtDependency"
     }
 }

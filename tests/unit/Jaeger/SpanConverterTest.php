@@ -122,12 +122,45 @@ class SpanConverterTest extends TestCase
         $this->assertEquals($expectedLow, $span->traceIdLow);
     }
 
+    /**
+     * @dataProvider traceIdValues
+     */
+    public function testHexdecBigNumbers($traceId, $expectedHigh, $expectedLow)
+    {
+        $ids = array_map(
+            '\OpenCensus\Trace\Exporter\Jaeger\SpanConverter::bcHalfUuidToInt64s',
+            str_split(
+                substr(
+                    str_pad($traceId, 32, "0", STR_PAD_LEFT),
+                    -32
+                ),
+                16
+            )
+        );
+        $this->assertEquals($expectedHigh, $ids[0]);
+        $this->assertEquals($expectedLow, $ids[1]);
+        $ids = array_map(
+            '\OpenCensus\Trace\Exporter\Jaeger\SpanConverter::gmpHalfUuidToInt64s',
+            str_split(
+                substr(
+                    str_pad($traceId, 32, "0", STR_PAD_LEFT),
+                    -32
+                ),
+                16
+            )
+        );
+        $this->assertEquals($expectedHigh, $ids[0]);
+        $this->assertEquals($expectedLow, $ids[1]);
+    }
+
     public function traceIdValues()
     {
         return [
             ['aaa', 0, 2730],
             ['aaa0000000000000bbb', 2730, 3003],
-            ['10000000000000aaa0000000000000bbb', 2730, 3003]
+            ['10000000000000aaa0000000000000bbb', 2730, 3003],
+            ['fd7a7112906349cc80bb3f6c6a385a85', -181708510409307700, -9170666481338787195],
+            ['5d37220beb8d4310b3e906a94776b893', 6716874803838272272, -5482843747228665709],
         ];
     }
 }

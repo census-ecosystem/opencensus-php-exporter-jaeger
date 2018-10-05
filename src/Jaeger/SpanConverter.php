@@ -142,7 +142,7 @@ class SpanConverter
                 $method = sprintf('\%s::gmpHalfUuidToInt64s', self::class);
                 break;
             default:
-                throw new \Exception('Please install `php-bc` or `php-gmp` extensions for this to work.');
+                throw new \Exception('Please install `php-bcmath` or `php-gmp` extensions for this to work.');
         }
         return array_slice(
             array_map(
