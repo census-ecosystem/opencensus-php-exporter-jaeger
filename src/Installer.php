@@ -2,7 +2,8 @@
 
 namespace OpenCensus\Trace\Exporter;
 
-class Installer {
+class Installer
+{
     public static function checkPhpExtDependency()
     {
         if (!function_exists('bcadd') && !function_exists('gmp_add')) {
