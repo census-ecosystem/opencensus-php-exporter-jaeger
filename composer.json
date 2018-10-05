@@ -27,7 +27,6 @@
         }
     },
     "scripts": {
-        "pre-package-install": "OpenCensus\\Trace\\Exporter\\Installer::checkPhpExtDependency",
-        "pre-package-update": "OpenCensus\\Trace\\Exporter\\Installer::checkPhpExtDependency"
+        "post-dependencies-solving": "OpenCensus\\Trace\\Exporter\\Installer::checkPhpExtDependency"
     }
 }

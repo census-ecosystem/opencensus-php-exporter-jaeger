@@ -117,40 +117,14 @@ class SpanConverterTest extends TestCase
             'startTime' => new \DateTime(),
             'endTime' => new \DateTime()
         ]);
+        SpanConverter::setPreferredBigMathExt(SpanConverter::BIG_MATH_BC);
         $span = SpanConverter::convertSpan($span->spanData());
         $this->assertEquals($expectedHigh, $span->traceIdHigh);
         $this->assertEquals($expectedLow, $span->traceIdLow);
-    }
-
-    /**
-     * @dataProvider traceIdValues
-     */
-    public function testHexdecBigNumbers($traceId, $expectedHigh, $expectedLow)
-    {
-        $ids = array_map(
-            '\OpenCensus\Trace\Exporter\Jaeger\SpanConverter::bcHalfUuidToInt64s',
-            str_split(
-                substr(
-                    str_pad($traceId, 32, "0", STR_PAD_LEFT),
-                    -32
-                ),
-                16
-            )
-        );
-        $this->assertEquals($expectedHigh, $ids[0]);
-        $this->assertEquals($expectedLow, $ids[1]);
-        $ids = array_map(
-            '\OpenCensus\Trace\Exporter\Jaeger\SpanConverter::gmpHalfUuidToInt64s',
-            str_split(
-                substr(
-                    str_pad($traceId, 32, "0", STR_PAD_LEFT),
-                    -32
-                ),
-                16
-            )
-        );
-        $this->assertEquals($expectedHigh, $ids[0]);
-        $this->assertEquals($expectedLow, $ids[1]);
+        SpanConverter::setPreferredBigMathExt(SpanConverter::BIG_MATH_GMP);
+        $span = SpanConverter::convertSpan($span->spanData());
+        $this->assertEquals($expectedHigh, $span->traceIdHigh);
+        $this->assertEquals($expectedLow, $span->traceIdLow);
     }
 
     public function traceIdValues()

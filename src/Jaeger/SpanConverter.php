@@ -125,7 +125,15 @@ class SpanConverter
         return (int)((float) $dateTime->format('U.u') * 1000 * 1000);
     }
 
+    const BIG_MATH_BC = 'bc';
+    const BIG_MATH_GMP = 'gmp';
 
+    private static $preferredBigMathExt = 'bc';
+
+    public static function setPreferredBigMathExt($ext = self::BIG_MATH_BC)
+    {
+        self::$preferredBigMathExt = $ext;
+    }
 
     /**
      * Split the provided hexId into 2 64-bit integers (16 hex chars each).
@@ -134,15 +142,13 @@ class SpanConverter
     private static function convertTraceId($hexId)
     {
         $method = '';
-        switch (true) {
-            case function_exists('bcadd'):
-                $method = sprintf('\%s::bcHalfUuidToInt64s', self::class);
-                break;
-            case function_exists('gmp_add'):
-                $method = sprintf('\%s::gmpHalfUuidToInt64s', self::class);
-                break;
-            default:
-                throw new \Exception('Please install `php-bcmath` or `php-gmp` extensions for this to work.');
+        if (self::$preferredBigMathExt === self::BIG_MATH_BC && !function_exists('bcadd')) {
+            throw new \Exception('For this functionality to work, please install PhP `bcmath` extension, or ' .
+                'swtich to `gmp`.');
+        }
+        if (self::$preferredBigMathExt === self::BIG_MATH_GMP && !function_exists('gmp_add')) {
+            throw new \Exception('For this functionality to work, please install PhP `gmp` extension, or ' .
+                'swtich to `bcmath`.');
         }
         return array_slice(
             array_map(
