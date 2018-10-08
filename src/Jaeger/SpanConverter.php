@@ -29,12 +29,14 @@ use Jaeger\Thrift\Span;
 use Jaeger\Thrift\Tag;
 use Jaeger\Thrift\TagType;
 
+/**
+ * This class handles converting from the OpenCensus data model into its
+ * Jaeger Thrift representation.
+ */
 class SpanConverter
 {
     /**
      * Convert an OpenCensus Span to its Jaeger Thrift representation.
-     *
-     * @access private
      *
      * @param SpanData $span The span to convert.
      * @return Span The Jaeger Thrift Span representation.
@@ -78,6 +80,11 @@ class SpanConverter
         return $tags;
     }
 
+    /**
+     *
+     * @param array $timeEvents
+     * @return array
+     */
     protected function convertLogs(array $timeEvents)
     {
         return array_map(function (TimeEvent $timeEvent) {
@@ -90,6 +97,11 @@ class SpanConverter
         }, $timeEvents);
     }
 
+    /**
+     *
+     * @param Annotation $annotation
+     * @return Log
+     */
     protected function convertAnnotation(Annotation $annotation)
     {
         return new Log([
@@ -100,6 +112,11 @@ class SpanConverter
         ]);
     }
 
+    /**
+     *
+     * @param MessageEvent $messageEvent
+     * @return Log
+     */
     protected function convertMessageEvent(MessageEvent $messageEvent)
     {
         return new Log([
@@ -124,6 +141,9 @@ class SpanConverter
     /**
      * Split the provided hexId into 2 64-bit integers (16 hex chars each).
      * Returns array of 2 int values.
+     *
+     * @param str $hexId
+     * @return array
      */
     protected function convertTraceId($hexId)
     {
@@ -146,7 +166,11 @@ class SpanConverter
     const MAX_INT_64S = '9223372036854775807';
 
     /**
-     * Hexdec convertion method for big data with limitation to PhP's signed INT64, using gmp
+     * Hexdec convertion method for big data with limitation to PhP's signed INT64, using gmp.
+     * Warning: Method may not work with hex numbers larger than 8 'digits'.
+     *
+     * @param str $hex
+     * @return number
      */
     protected function hexdec($hex)
     {

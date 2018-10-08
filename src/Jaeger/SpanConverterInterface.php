@@ -36,8 +36,7 @@ interface SpanConverterInterface
 {
     /**
      * Convert an OpenCensus Span to its Jaeger Thrift representation.
-     *
-     * @access private
+     * Warning: Method may not work with hex numbers larger than 8 'digits'.
      *
      * @param SpanData $span The span to convert.
      * @return Span The Jaeger Thrift Span representation.

@@ -18,11 +18,18 @@
 namespace OpenCensus\Trace\Exporter\Jaeger;
 
 use OpenCensus\Trace\Exporter\Jaeger\SpanConverter;
-
+/**
+ * This class handles converting from the OpenCensus data model into its
+ * Jaeger Thrift representation.
+ */
 class SpanConverterBcmath extends SpanConverter
 {
     /**
-     * Hexdec convertion method for big data with limitation to PhP's signed INT64, using bcmath
+     * Hexdec convertion method for big data with limitation to PhP's signed INT64, using bcmath.
+     * Warning: Method may not work with hex numbers larger than 8 'digits'.
+     *
+     * @param str $hex
+     * @return number
      */
     protected function hexdec($hex)
     {
