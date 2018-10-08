@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Exporter\Jaeger;
 
 use OpenCensus\Trace\Exporter\Jaeger\SpanConverter;
+
 /**
  * This class handles converting from the OpenCensus data model into its
  * Jaeger Thrift representation.

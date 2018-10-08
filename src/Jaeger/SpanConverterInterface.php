@@ -18,15 +18,9 @@
 
 namespace OpenCensus\Trace\Exporter\Jaeger;
 
-use OpenCensus\Trace\Annotation;
-use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanData;
-use OpenCensus\Trace\TimeEvent;
 
-use Jaeger\Thrift\Log;
 use Jaeger\Thrift\Span;
-use Jaeger\Thrift\Tag;
-use Jaeger\Thrift\TagType;
 
 /**
  * This class handles converting from the OpenCensus data model into its
@@ -36,7 +30,6 @@ interface SpanConverterInterface
 {
     /**
      * Convert an OpenCensus Span to its Jaeger Thrift representation.
-     * Warning: Method may not work with hex numbers larger than 8 'digits'.
      *
      * @param SpanData $span The span to convert.
      * @return Span The Jaeger Thrift Span representation.
