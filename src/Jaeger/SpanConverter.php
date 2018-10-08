@@ -38,18 +38,16 @@ class SpanConverter
     /**
      * Convert an OpenCensus Span to its Jaeger Thrift representation.
      *
-     * @access private
-     *
      * @param SpanData $span The span to convert.
      * @return Span The Jaeger Thrift Span representation.
      */
-    public static function convertSpan(SpanData $span)
+    public function convertSpan(SpanData $span)
     {
-        $startTime = self::convertTimestamp($span->startTime());
-        $endTime = self::convertTimestamp($span->endTime());
-        $spanId = hexdec($span->spanId());
-        $parentSpanId = hexdec($span->parentSpanId());
-        list($highTraceId, $lowTraceId) = self::convertTraceId($span->traceId());
+        $startTime = $this->convertTimestamp($span->startTime());
+        $endTime = $this->convertTimestamp($span->endTime());
+        $spanId = $this->hexdec($span->spanId());
+        $parentSpanId = $this->hexdec($span->parentSpanId());
+        list($highTraceId, $lowTraceId) = $this->convertTraceId($span->traceId());
 
         return new Span([
             'traceIdLow' => $lowTraceId,
@@ -61,15 +59,15 @@ class SpanConverter
             'flags' => 0,
             'startTime' => $startTime,
             'duration' => $endTime - $startTime,
-            'tags' => self::convertTags($span->attributes()),
-            'logs' => self::convertLogs($span->timeEvents())
+            'tags' => $this->convertTags($span->attributes()),
+            'logs' => $this->convertLogs($span->timeEvents())
         ]);
     }
 
     /**
      * Convert an associative array of $key => $value to Jaeger Tags.
      */
-    public static function convertTags(array $attributes)
+    public function convertTags(array $attributes)
     {
         $tags = [];
         foreach ($attributes as $key => $value) {
@@ -82,33 +80,48 @@ class SpanConverter
         return $tags;
     }
 
-    private static function convertLogs(array $timeEvents)
+    /**
+     *
+     * @param array $timeEvents
+     * @return array
+     */
+    protected function convertLogs(array $timeEvents)
     {
         return array_map(function (TimeEvent $timeEvent) {
             if ($timeEvent instanceof Annotation) {
-                return self::convertAnnotation($timeEvent);
+                return $this->convertAnnotation($timeEvent);
             } elseif ($timeEvent instanceof MessageEvent) {
-                return self::convertMessageEvent($timeEvent);
+                return $this->convertMessageEvent($timeEvent);
             } else {
             }
         }, $timeEvents);
     }
 
-    private static function convertAnnotation(Annotation $annotation)
+    /**
+     *
+     * @param Annotation $annotation
+     * @return Log
+     */
+    protected function convertAnnotation(Annotation $annotation)
     {
         return new Log([
-            'timestamp' => self::convertTimestamp($annotation->time()),
-            'fields' => self::convertTags($annotation->attributes() + [
+            'timestamp' => $this->convertTimestamp($annotation->time()),
+            'fields' => $this->convertTags($annotation->attributes() + [
                 'description' => $annotation->description()
             ])
         ]);
     }
 
-    private static function convertMessageEvent(MessageEvent $messageEvent)
+    /**
+     *
+     * @param MessageEvent $messageEvent
+     * @return Log
+     */
+    protected function convertMessageEvent(MessageEvent $messageEvent)
     {
         return new Log([
-            'timestamp' => self::convertTimestamp($messageEvent->time()),
-            'fields' => self::convertTags([
+            'timestamp' => $this->convertTimestamp($messageEvent->time()),
+            'fields' => $this->convertTags([
                 'type' => $messageEvent->type(),
                 'id' => $messageEvent->id(),
                 'uncompressedSize' => $messageEvent->uncompressedSize(),
@@ -120,40 +133,23 @@ class SpanConverter
     /**
      * Return the given timestamp as an int in milliseconds.
      */
-    private static function convertTimestamp(\DateTimeInterface $dateTime)
+    protected function convertTimestamp(\DateTimeInterface $dateTime)
     {
         return (int)((float) $dateTime->format('U.u') * 1000 * 1000);
-    }
-
-    const BIG_MATH_BC = 'bc';
-    const BIG_MATH_GMP = 'gmp';
-
-    private static $preferredBigMathExt = 'bc';
-
-    public static function setPreferredBigMathExt($ext = self::BIG_MATH_BC)
-    {
-        self::$preferredBigMathExt = $ext;
     }
 
     /**
      * Split the provided hexId into 2 64-bit integers (16 hex chars each).
      * Returns array of 2 int values.
+     *
+     * @param str $hexId
+     * @return array
      */
-    private static function convertTraceId($hexId)
+    protected function convertTraceId($hexId)
     {
-        $method = '';
-        if (self::$preferredBigMathExt === self::BIG_MATH_BC) {
-            $method = sprintf('\%s::bcHalfUuidToInt64s', self::class);
-        }
-        if (self::$preferredBigMathExt === self::BIG_MATH_GMP) {
-            $method = sprintf('\%s::gmpHalfUuidToInt64s', self::class);
-        }
-        if (!$method) {
-            throw new \Exception('No big math `hexdec` method selected. Have you set the proper big math extension?');
-        }
         return array_slice(
             array_map(
-                $method,
+                [$this, 'hexdec'],
                 str_split(
                     substr(
                         str_pad($hexId, 32, "0", STR_PAD_LEFT),
@@ -169,7 +165,14 @@ class SpanConverter
 
     const MAX_INT_64S = '9223372036854775807';
 
-    private static function gmpHalfUuidToInt64s($hex)
+    /**
+     * Hexdec convertion method for big data with limitation to PhP's signed INT64, using gmp.
+     * Warning: Method may not work with hex numbers larger than 8 'digits'.
+     *
+     * @param str $hex
+     * @return number
+     */
+    protected function hexdec($hex)
     {
         $dec = 0;
         $len = strlen($hex);
@@ -178,19 +181,6 @@ class SpanConverter
         }
         if (gmp_cmp($dec, self::MAX_INT_64S) > 0) {
             $dec = gmp_sub(gmp_and($dec, self::MAX_INT_64S), gmp_add(self::MAX_INT_64S, '1'));
-        }
-        return intval($dec);
-    }
-
-    private static function bcHalfUuidToInt64s($hex)
-    {
-        $dec = 0;
-        $len = strlen($hex);
-        for ($i = 1; $i <= $len; $i++) {
-            $dec = bcadd($dec, bcmul(strval(hexdec($hex[$i - 1])), bcpow('16', strval($len - $i))));
-        }
-        if (bccomp($dec, self::MAX_INT_64S) > 0) {
-            $dec = bcsub(bcsub($dec, self::MAX_INT_64S), bcadd(self::MAX_INT_64S, '2'));
         }
         return intval($dec);
     }

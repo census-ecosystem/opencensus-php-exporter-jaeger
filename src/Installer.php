@@ -6,7 +6,7 @@ class Installer
 {
     public static function checkPhpExtDependency()
     {
-        if (!function_exists('bcadd') && !function_exists('gmp_add')) {
+        if (!extension_loaded('bcmath') && !extension_loaded('gmp')) {
             throw new \Exception('`opencensus-php-exporter-jaeger` requires one of the two extensions to be '
                 . 'installed: `php-bcmath` or `php-gmp`');
         }
