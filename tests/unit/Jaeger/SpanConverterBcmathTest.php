@@ -19,7 +19,9 @@ namespace OpenCensus\Tests\Unit\Trace\Exporter\Jaeger;
 
 use OpenCensus\Trace\Exporter\Jaeger\SpanConverterBcmath;
 
-class SpanConverterTest extends TestCase
+use OpenCensus\Tests\Unit\Trace\Exporter\Jaeger\SpanConverterTest;
+
+class SpanConverterBcmathTest extends SpanConverterTest
 {
     public function setUp()
     {

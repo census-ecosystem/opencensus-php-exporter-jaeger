@@ -18,7 +18,6 @@
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
 use OpenCensus\Trace\Exporter\Jaeger\SpanConverterBcmath;
-
 use OpenCensus\Tests\Unit\Trace\Exporter\JaegerExporterTest;
 
 /**
