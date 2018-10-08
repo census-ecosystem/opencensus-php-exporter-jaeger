@@ -20,6 +20,7 @@ namespace OpenCensus\Trace\Exporter\Jaeger;
 require_once __DIR__ . '/../Thrift/Types.php';
 
 use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\Exporter\Jaeger\SpanConverterInterface;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\TimeEvent;
@@ -33,8 +34,26 @@ use Jaeger\Thrift\TagType;
  * This class handles converting from the OpenCensus data model into its
  * Jaeger Thrift representation.
  */
-class SpanConverter
+class SpanConverter implements SpanConverterInterface
 {
+
+    /**
+     *@var HexdecConverterInterface
+     */
+    private $hexdec = null;
+
+    /**
+     * Create a new Span Converter.
+     *
+     * @param array $options [optional] {
+     *     @type HexdecConvertor convertor for hex values
+     * }
+     */
+    public function __construct(array $options = [])
+    {
+        $this->hexdec = empty($options['hexdecConverter']) ? new HexdecConverter() : $options['hexdecConverter'];
+    }
+
     /**
      * Convert an OpenCensus Span to its Jaeger Thrift representation.
      *
@@ -45,8 +64,8 @@ class SpanConverter
     {
         $startTime = $this->convertTimestamp($span->startTime());
         $endTime = $this->convertTimestamp($span->endTime());
-        $spanId = $this->hexdec($span->spanId());
-        $parentSpanId = $this->hexdec($span->parentSpanId());
+        $spanId = $this->hexdec->convert($span->spanId());
+        $parentSpanId = $this->hexdec->convert($span->parentSpanId());
         list($highTraceId, $lowTraceId) = $this->convertTraceId($span->traceId());
 
         return new Span([
@@ -85,7 +104,7 @@ class SpanConverter
      * @param array $timeEvents
      * @return array
      */
-    protected function convertLogs(array $timeEvents)
+    private function convertLogs(array $timeEvents)
     {
         return array_map(function (TimeEvent $timeEvent) {
             if ($timeEvent instanceof Annotation) {
@@ -102,7 +121,7 @@ class SpanConverter
      * @param Annotation $annotation
      * @return Log
      */
-    protected function convertAnnotation(Annotation $annotation)
+    private function convertAnnotation(Annotation $annotation)
     {
         return new Log([
             'timestamp' => $this->convertTimestamp($annotation->time()),
@@ -117,7 +136,7 @@ class SpanConverter
      * @param MessageEvent $messageEvent
      * @return Log
      */
-    protected function convertMessageEvent(MessageEvent $messageEvent)
+    private function convertMessageEvent(MessageEvent $messageEvent)
     {
         return new Log([
             'timestamp' => $this->convertTimestamp($messageEvent->time()),
@@ -133,7 +152,7 @@ class SpanConverter
     /**
      * Return the given timestamp as an int in milliseconds.
      */
-    protected function convertTimestamp(\DateTimeInterface $dateTime)
+    private function convertTimestamp(\DateTimeInterface $dateTime)
     {
         return (int)((float) $dateTime->format('U.u') * 1000 * 1000);
     }
@@ -145,11 +164,11 @@ class SpanConverter
      * @param str $hexId
      * @return array
      */
-    protected function convertTraceId($hexId)
+    private function convertTraceId($hexId)
     {
         return array_slice(
             array_map(
-                [$this, 'hexdec'],
+                [$this->hexdec, 'convert'],
                 str_split(
                     substr(
                         str_pad($hexId, 32, "0", STR_PAD_LEFT),
@@ -163,25 +182,4 @@ class SpanConverter
         );
     }
 
-    const MAX_INT_64S = '9223372036854775807';
-
-    /**
-     * Hexdec convertion method for big data with limitation to PhP's signed INT64, using gmp.
-     * Warning: Method may not work with hex numbers larger than 8 'digits'.
-     *
-     * @param str $hex
-     * @return number
-     */
-    protected function hexdec($hex)
-    {
-        $dec = 0;
-        $len = strlen($hex);
-        for ($i = 1; $i <= $len; $i++) {
-            $dec = gmp_add($dec, gmp_mul(strval(hexdec($hex[$i - 1])), gmp_pow('16', strval($len - $i))));
-        }
-        if (gmp_cmp($dec, self::MAX_INT_64S) > 0) {
-            $dec = gmp_sub(gmp_and($dec, self::MAX_INT_64S), gmp_add(self::MAX_INT_64S, '1'));
-        }
-        return intval($dec);
-    }
 }
