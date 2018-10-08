@@ -181,5 +181,4 @@ class SpanConverter implements SpanConverterInterface
             2
         );
     }
-
 }
