@@ -21,13 +21,16 @@ require_once __DIR__ . '/SpanConverterTest.php';
 
 use OpenCensus\Tests\Unit\Trace\Exporter\Jaeger\SpanConverterTest;
 
-use OpenCensus\Trace\Exporter\Jaeger\SpanConverterBcmath;
+use OpenCensus\Trace\Exporter\Jaeger\HexdecConverterBcMath;
+use OpenCensus\Trace\Exporter\Jaeger\SpanConverter;
 
-class SpanConverterBcmathTest extends SpanConverterTest
+class SpanConverterBcMathTest extends SpanConverterTest
 {
     public function setUp()
     {
         parent::setUp();
-        $this->converter = new SpanConverterBcmath();
+        $this->converter = new SpanConverter([
+            'hexdecConverter' => new HexdecConverterBcMath()
+        ]);
     }
 }

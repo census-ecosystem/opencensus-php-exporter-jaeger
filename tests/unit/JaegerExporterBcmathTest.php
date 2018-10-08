@@ -21,9 +21,9 @@ require_once __DIR__ . '/JaegerExporterTest.php';
 
 use OpenCensus\Tests\Unit\Trace\Exporter\JaegerExporterTest;
 
-use OpenCensus\Trace\Exporter\Jaeger\SpanConverterBcmath;
-
 use OpenCensus\Trace\Exporter\JaegerExporter;
+use OpenCensus\Trace\Exporter\Jaeger\SpanConverter;
+use OpenCensus\Trace\Exporter\Jaeger\HexdecConverterBcMath;
 use OpenCensus\Trace\Annotation;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span as OCSpan;
@@ -35,7 +35,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @group trace
  */
-class JaegerExporterBcmathTest extends JaegerExporterTest
+class JaegerExporterBcMathTest extends JaegerExporterTest
 {
     private $client;
 
@@ -50,7 +50,9 @@ class JaegerExporterBcmathTest extends JaegerExporterTest
         $this->client->emitBatch(
             Argument::any()
         )->willReturn(null)->shouldBeCalled();
-        $converter = new SpanConverterBcmath();
+        $converter = new SpanConverter([
+            'hexdecConverter' => new HexdecConverterBcMath()
+        ]);
         $exporter = new JaegerExporter('test-agent', [
             'client' => $this->client->reveal(),
             'spanConverter' => $converter
@@ -67,7 +69,9 @@ class JaegerExporterBcmathTest extends JaegerExporterTest
 
     public function testEmptyTrace()
     {
-        $converter = new SpanConverterBcmath();
+        $converter = new SpanConverter([
+            'hexdecConverter' => new HexdecConverterBcMath()
+        ]);
         $exporter = new JaegerExporter('test-agent', [
             'client' => $this->client->reveal(),
             'spanConverter' => $converter
