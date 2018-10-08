@@ -17,8 +17,20 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
-use OpenCensus\Trace\Exporter\Jaeger\SpanConverterBcmath;
+require_once __DIR__ . '/JaegerExporterTest.php';
+
 use OpenCensus\Tests\Unit\Trace\Exporter\JaegerExporterTest;
+
+use OpenCensus\Trace\Exporter\Jaeger\SpanConverterBcmath;
+
+use OpenCensus\Trace\Exporter\JaegerExporter;
+use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\MessageEvent;
+use OpenCensus\Trace\Span as OCSpan;
+use Prophecy\Argument;
+use Jaeger\Thrift\Span;
+use Jaeger\Thrift\Agent\AgentIf;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace

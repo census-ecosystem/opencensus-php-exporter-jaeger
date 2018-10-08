@@ -17,9 +17,11 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Exporter\Jaeger;
 
-use OpenCensus\Trace\Exporter\Jaeger\SpanConverterBcmath;
+require_once __DIR__ . '/SpanConverterTest.php';
 
 use OpenCensus\Tests\Unit\Trace\Exporter\Jaeger\SpanConverterTest;
+
+use OpenCensus\Trace\Exporter\Jaeger\SpanConverterBcmath;
 
 class SpanConverterBcmathTest extends SpanConverterTest
 {

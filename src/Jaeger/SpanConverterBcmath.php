@@ -39,8 +39,8 @@ class SpanConverterBcmath extends SpanConverter
         for ($i = 1; $i <= $len; $i++) {
             $dec = bcadd($dec, bcmul(strval(hexdec($hex[$i - 1])), bcpow('16', strval($len - $i))));
         }
-        if (bccomp($dec, $this->MAX_INT_64S) > 0) {
-            $dec = bcsub(bcsub($dec, $this->MAX_INT_64S), bcadd($this->MAX_INT_64S, '2'));
+        if (bccomp($dec, self::MAX_INT_64S) > 0) {
+            $dec = bcsub(bcsub($dec, self::MAX_INT_64S), bcadd(self::MAX_INT_64S, '2'));
         }
         return intval($dec);
     }
