@@ -30,7 +30,8 @@ class SpanConverterTest extends TestCase
 {
     public function setUp()
     {
-        $this->spanConverter = new SpanConverter();
+        parent::setUp();
+        $this->converter = new SpanConverter();
     }
 
     public function testFormatsTrace()
@@ -42,7 +43,7 @@ class SpanConverterTest extends TestCase
             'startTime' => new \DateTime(),
             'endTime' => new \DateTime()
         ]);
-        $span = $this->spanConverter->convertSpan($span->spanData());
+        $span = $this->converter->convertSpan($span->spanData());
         $this->assertInstanceOf(Span::class, $span);
         $this->assertInternalType('string', $span->operationName);
         $this->assertInternalType('int', $span->traceIdHigh);
@@ -71,7 +72,7 @@ class SpanConverterTest extends TestCase
             'startTime' => new \DateTime(),
             'endTime' => new \DateTime()
         ]);
-        $span = $this->spanConverter->convertSpan($span->spanData());
+        $span = $this->converter->convertSpan($span->spanData());
         $this->assertCount(2, $span->logs);
         $log1 = $span->logs[0];
         $this->assertInternalType('int', $log1->timestamp);
@@ -104,7 +105,7 @@ class SpanConverterTest extends TestCase
             'startTime' => new \DateTime(),
             'endTime' => new \DateTime()
         ]);
-        $span = $this->spanConverter->convertSpan($span->spanData());
+        $span = $this->converter->convertSpan($span->spanData());
         $this->assertCount(2, $span->tags);
         $this->assertEquals('foo', $span->tags[0]->key);
         $this->assertEquals('bar', $span->tags[0]->vStr);
@@ -122,7 +123,7 @@ class SpanConverterTest extends TestCase
             'startTime' => new \DateTime(),
             'endTime' => new \DateTime()
         ]);
-        $spanData = $this->spanConverter->convertSpan($span->spanData());
+        $spanData = $this->converter->convertSpan($span->spanData());
         $this->assertEquals($expectedHigh, $spanData->traceIdHigh);
         $this->assertEquals($expectedLow, $spanData->traceIdLow);
     }

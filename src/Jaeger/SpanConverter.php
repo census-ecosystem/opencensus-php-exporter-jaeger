@@ -155,8 +155,8 @@ class SpanConverter
         for ($i = 1; $i <= $len; $i++) {
             $dec = gmp_add($dec, gmp_mul(strval(hexdec($hex[$i - 1])), gmp_pow('16', strval($len - $i))));
         }
-        if (gmp_cmp($dec, $this->MAX_INT_64S) > 0) {
-            $dec = gmp_sub(gmp_and($dec, $this->MAX_INT_64S), gmp_add($this->MAX_INT_64S, '1'));
+        if (gmp_cmp($dec, self::MAX_INT_64S) > 0) {
+            $dec = gmp_sub(gmp_and($dec, self::MAX_INT_64S), gmp_add(self::MAX_INT_64S, '1'));
         }
         return intval($dec);
     }
