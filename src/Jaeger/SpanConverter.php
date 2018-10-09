@@ -35,21 +35,37 @@ use Jaeger\Thrift\TagType;
  */
 class SpanConverter
 {
+
+    /**
+     *@var HexdecConverterInterface
+     */
+    private $hexdec = null;
+
+    /**
+     * Create a new Span Converter.
+     *
+     * @param array $options [optional] {
+     *     @type HexdecConvertor convertor for hex values
+     * }
+     */
+    public function __construct(array $options = [])
+    {
+        $this->hexdec = empty($options['hexdecConverter']) ? new HexdecConverter() : $options['hexdecConverter'];
+    }
+
     /**
      * Convert an OpenCensus Span to its Jaeger Thrift representation.
-     *
-     * @access private
      *
      * @param SpanData $span The span to convert.
      * @return Span The Jaeger Thrift Span representation.
      */
-    public static function convertSpan(SpanData $span)
+    public function convertSpan(SpanData $span)
     {
-        $startTime = self::convertTimestamp($span->startTime());
-        $endTime = self::convertTimestamp($span->endTime());
-        $spanId = hexdec($span->spanId());
-        $parentSpanId = hexdec($span->parentSpanId());
-        list($highTraceId, $lowTraceId) = self::convertTraceId($span->traceId());
+        $startTime = $this->convertTimestamp($span->startTime());
+        $endTime = $this->convertTimestamp($span->endTime());
+        $spanId = $this->hexdec->convert($span->spanId());
+        $parentSpanId = $this->hexdec->convert($span->parentSpanId());
+        list($highTraceId, $lowTraceId) = $this->convertTraceId($span->traceId());
 
         return new Span([
             'traceIdLow' => $lowTraceId,
@@ -61,15 +77,15 @@ class SpanConverter
             'flags' => 0,
             'startTime' => $startTime,
             'duration' => $endTime - $startTime,
-            'tags' => self::convertTags($span->attributes()),
-            'logs' => self::convertLogs($span->timeEvents())
+            'tags' => $this->convertTags($span->attributes()),
+            'logs' => $this->convertLogs($span->timeEvents())
         ]);
     }
 
     /**
      * Convert an associative array of $key => $value to Jaeger Tags.
      */
-    public static function convertTags(array $attributes)
+    public function convertTags(array $attributes)
     {
         $tags = [];
         foreach ($attributes as $key => $value) {
@@ -82,33 +98,48 @@ class SpanConverter
         return $tags;
     }
 
-    private static function convertLogs(array $timeEvents)
+    /**
+     *
+     * @param array $timeEvents
+     * @return array
+     */
+    private function convertLogs(array $timeEvents)
     {
         return array_map(function (TimeEvent $timeEvent) {
             if ($timeEvent instanceof Annotation) {
-                return self::convertAnnotation($timeEvent);
+                return $this->convertAnnotation($timeEvent);
             } elseif ($timeEvent instanceof MessageEvent) {
-                return self::convertMessageEvent($timeEvent);
+                return $this->convertMessageEvent($timeEvent);
             } else {
             }
         }, $timeEvents);
     }
 
-    private static function convertAnnotation(Annotation $annotation)
+    /**
+     *
+     * @param Annotation $annotation
+     * @return Log
+     */
+    private function convertAnnotation(Annotation $annotation)
     {
         return new Log([
-            'timestamp' => self::convertTimestamp($annotation->time()),
-            'fields' => self::convertTags($annotation->attributes() + [
+            'timestamp' => $this->convertTimestamp($annotation->time()),
+            'fields' => $this->convertTags($annotation->attributes() + [
                 'description' => $annotation->description()
             ])
         ]);
     }
 
-    private static function convertMessageEvent(MessageEvent $messageEvent)
+    /**
+     *
+     * @param MessageEvent $messageEvent
+     * @return Log
+     */
+    private function convertMessageEvent(MessageEvent $messageEvent)
     {
         return new Log([
-            'timestamp' => self::convertTimestamp($messageEvent->time()),
-            'fields' => self::convertTags([
+            'timestamp' => $this->convertTimestamp($messageEvent->time()),
+            'fields' => $this->convertTags([
                 'type' => $messageEvent->type(),
                 'id' => $messageEvent->id(),
                 'uncompressedSize' => $messageEvent->uncompressedSize(),
@@ -120,7 +151,7 @@ class SpanConverter
     /**
      * Return the given timestamp as an int in milliseconds.
      */
-    private static function convertTimestamp(\DateTimeInterface $dateTime)
+    private function convertTimestamp(\DateTimeInterface $dateTime)
     {
         return (int)((float) $dateTime->format('U.u') * 1000 * 1000);
     }
@@ -128,12 +159,15 @@ class SpanConverter
     /**
      * Split the provided hexId into 2 64-bit integers (16 hex chars each).
      * Returns array of 2 int values.
+     *
+     * @param str $hexId
+     * @return array
      */
-    private static function convertTraceId($hexId)
+    private function convertTraceId($hexId)
     {
         return array_slice(
             array_map(
-                'hexdec',
+                [$this->hexdec, 'convert'],
                 str_split(
                     substr(
                         str_pad($hexId, 32, "0", STR_PAD_LEFT),

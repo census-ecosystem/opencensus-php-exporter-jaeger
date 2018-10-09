@@ -36,22 +36,27 @@ class JaegerExporter implements ExporterInterface
     /**
      * @var string
      */
-    protected $host;
+    private $host;
 
     /**
      * @var int
      */
-    protected $port;
+    private $port;
 
     /**
      * @var Process
      */
-    protected $process;
+    private $process;
 
     /**
      * @var AgentIf
      */
-    protected $client;
+    private $client;
+
+    /**
+     * @var SpanConverter
+     */
+    private $spanConverter;
 
     /**
      * Create a new Jaeger Exporter.
@@ -76,9 +81,10 @@ class JaegerExporter implements ExporterInterface
         ];
         $this->host = $options['host'];
         $this->port = (int) $options['port'];
+        $this->spanConverter = empty($options['spanConverter']) ? new SpanConverter() : $options['spanConverter'];
         $this->process = new Process([
             'serviceName' => $serviceName,
-            'tags' => SpanConverter::convertTags($options['tags'])
+            'tags' => $this->spanConverter->convertTags($options['tags'])
         ]);
         $this->client = $options['client'];
     }
@@ -98,7 +104,7 @@ class JaegerExporter implements ExporterInterface
         $client = $this->client ?: new UDPClient($this->host, $this->port);
         $batch = new Batch([
             'process' => $this->process,
-            'spans' => array_map([SpanConverter::class, 'convertSpan'], $spans)
+            'spans' => array_map([$this->spanConverter, 'convertSpan'], $spans)
         ]);
 
         $client->emitBatch($batch);
