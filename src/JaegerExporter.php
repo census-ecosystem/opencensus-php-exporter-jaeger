@@ -36,22 +36,27 @@ class JaegerExporter implements ExporterInterface
     /**
      * @var string
      */
-    protected $host;
+    private $host;
 
     /**
      * @var int
      */
-    protected $port;
+    private $port;
 
     /**
      * @var Process
      */
-    protected $process;
+    private $process;
 
     /**
      * @var AgentIf
      */
-    protected $client;
+    private $client;
+
+    /**
+     * @var SpanConverter
+     */
+    private $spanConverter;
 
     /**
      * Create a new Jaeger Exporter.
