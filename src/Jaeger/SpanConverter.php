@@ -20,7 +20,6 @@ namespace OpenCensus\Trace\Exporter\Jaeger;
 require_once __DIR__ . '/../Thrift/Types.php';
 
 use OpenCensus\Trace\Annotation;
-use OpenCensus\Trace\Exporter\Jaeger\SpanConverterInterface;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\TimeEvent;
@@ -34,7 +33,7 @@ use Jaeger\Thrift\TagType;
  * This class handles converting from the OpenCensus data model into its
  * Jaeger Thrift representation.
  */
-class SpanConverter implements SpanConverterInterface
+class SpanConverter
 {
 
     /**

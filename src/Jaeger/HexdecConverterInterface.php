@@ -18,12 +18,13 @@
 namespace OpenCensus\Trace\Exporter\Jaeger;
 
  /**
-  *
+  * Hexdec converter interface. Used for converting hex string values into numbers by using
+  * large numbers math libraries like Gmp or BCMath.
   */
 interface HexdecConverterInterface
 {
     /**
-     * Hexdec convertion method for big data with limitation to PhP's signed INT64.
+     * Hexdec convertion method for large numbers with limitation to PhP's signed INT64.
      *
      * @param str $hex
      * @return number

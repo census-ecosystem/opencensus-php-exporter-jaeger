@@ -19,13 +19,17 @@ namespace OpenCensus\Trace\Exporter\Jaeger;
 
 use OpenCensus\Trace\Exporter\Jaeger\HexdecConverterInterface;
 
+ /**
+  * Hexdec converter class. Used for converting hex string values into numbers by using
+  * `gmp` as large numbers library.
+  */
 class HexdecConverter implements HexdecConverterInterface
 {
 
     const MAX_INT_64S = '9223372036854775807';
 
     /**
-     * Hexdec convertion method for big data with limitation to PhP's signed INT64, using gmp.
+     * Hexdec convertion method for large numbers with limitation to PhP's signed INT64, using gmp.
      * Warning: Method may not work with hex numbers larger than 8 'digits'.
      *
      * @param str $hex
