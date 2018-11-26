@@ -86,17 +86,19 @@ class UDPClient implements AgentIf
         $client = new AgentClient(null, $protocol);
 
         $client->emitBatch($batch);
-        $data = $buffer->getBuffer();
 
         try {
-            socket_sendto(
-                $socket,
-                $data,
-                strlen($data),
-                0,
-                $this->host,
-                $this->port
-            );
+            while ($buffer->available()) {
+                $data = $buffer->read(65507); // max size of DGRAM payload https://stackoverflow.com/a/38742429
+                socket_sendto(
+                    $socket,
+                    $data,
+                    strlen($data),
+                    ( $buffer->available() ) ? MSG_EOR : MSG_EOF,
+                    $this->host,
+                    $this->port
+                );
+            }
         } finally {
             socket_close($socket);
         }

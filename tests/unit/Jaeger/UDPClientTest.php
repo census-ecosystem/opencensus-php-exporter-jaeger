@@ -93,7 +93,7 @@ class UDPClientTest extends TestCase
             $resource,
             Argument::type('string'),
             Argument::type('int'),
-            0,
+            512,
             '1.1.1.1',
             1234
         )->willReturn(123)->shouldBeCalledTimes(1);
