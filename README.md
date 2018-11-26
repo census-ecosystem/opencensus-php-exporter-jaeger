@@ -44,7 +44,7 @@ The following options are available:
 | Option | Default | Description |
 | ------ | ------- | ----------- |
 | `host` | "127.0.0.1" | The TCP IP address to send the UDP request to |
-| `port` | 6931 | The TCP port to send the UDP request to |
+| `port` | 6831 | The TCP port to send the UDP request to |
 | `tags` | (empty) | An associative array of tags to mark this process with |
 | `client` | null | Optional [`AgentIf`][agent-interface] interface to use for testing |
 
