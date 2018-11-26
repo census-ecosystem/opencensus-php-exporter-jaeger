@@ -1,16 +1,17 @@
 unit-config: &unit-config
   steps:
     # library requires sockets extension
-    - run: sudo docker-php-ext-install sockets
+    - run: sudo apt-get install -y libgmp-dev re2c libmhash-dev libmcrypt-dev file && sudo ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
+    - run: sudo docker-php-ext-install bcmath gmp sockets
 
     - checkout
 
     # Download and cache dependencies
     - restore_cache:
         keys:
-        - v1-dependencies-{{ checksum "composer.json" }}
+        - v1-dependencies-{{ checksum "composer.json" }}-v1
         # fallback to using the latest cache if no exact match is found
-        - v1-dependencies-
+        - v1-dependencies-v1-
 
     - run: composer install -n --prefer-dist
 
