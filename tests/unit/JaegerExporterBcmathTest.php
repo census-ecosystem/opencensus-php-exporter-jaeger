@@ -17,8 +17,6 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
-require_once __DIR__ . '/JaegerExporterTest.php';
-
 use OpenCensus\Tests\Unit\Trace\Exporter\JaegerExporterTest;
 
 use OpenCensus\Trace\Exporter\JaegerExporter;

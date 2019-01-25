@@ -17,8 +17,6 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Exporter\Jaeger;
 
-require_once __DIR__ . '/SpanConverterTest.php';
-
 use OpenCensus\Tests\Unit\Trace\Exporter\Jaeger\SpanConverterTest;
 
 use OpenCensus\Trace\Exporter\Jaeger\HexdecConverterBcMath;

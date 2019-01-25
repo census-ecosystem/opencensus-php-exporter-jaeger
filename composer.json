@@ -9,9 +9,13 @@
         "ext-sockets": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.0",
+        "phpunit/phpunit": "^5.0 || ^6.5",
         "squizlabs/php_codesniffer": "2.*",
         "guzzlehttp/guzzle": "~6.0"
+    },
+    "suggest": {
+        "ext-gmp": "It can handle the large numbers",
+        "ext-bcmath": "It can handle large integer numbers"
     },
     "license": "Apache-2.0",
     "authors": [
@@ -24,6 +28,12 @@
     "autoload": {
         "psr-4": {
             "OpenCensus\\Trace\\Exporter\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OpenCensus\\Tests\\Unit\\Trace\\Exporter\\": "tests/unit/",
+            "OpenCensus\\Tests\\Integration\\Trace\\Exporter\\": "tests/integration/"
         }
     },
     "scripts": {
