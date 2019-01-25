@@ -17,8 +17,6 @@
 
 namespace OpenCensus\Trace\Exporter\Jaeger;
 
-require_once 'src/Thrift/Types.php';
-
 use Jaeger\Thrift\Batch;
 use Jaeger\Thrift\Process;
 use Jaeger\Thrift\Span;

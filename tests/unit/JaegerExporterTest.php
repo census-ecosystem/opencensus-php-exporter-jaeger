@@ -17,8 +17,6 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
-require_once 'src/Thrift/Agent.php';
-
 use OpenCensus\Trace\Exporter\JaegerExporter;
 use OpenCensus\Trace\Annotation;
 use OpenCensus\Trace\MessageEvent;
