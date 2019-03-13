@@ -11,6 +11,7 @@ Trace data to a Jaeger instance using Thrift (Compact Protocol) over UDP.
 
 * PHP >= 5.6
 * 64-bit version of PHP
+* PHP [GMP](https://secure.php.net/manual/en/intro.gmp.php) extension
 
 ## Installation & basic usage
 
