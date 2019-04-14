@@ -27,6 +27,10 @@
         }
     },
     "scripts": {
-        "post-dependencies-solving": "OpenCensus\\Trace\\Exporter\\Installer::checkPhpExtDependency"
+        "post-dependencies-solving": "OpenCensus\\Trace\\Exporter\\Installer::checkPhpExtDependency",
+        "post-install-cmd": [
+            "cd vendor/apache/thrift && ls | grep -v lib | xargs rm -rf",
+            "cd vendor/apache/thrift/lib && ls | grep -v php | xargs rm -rf"
+        ]
     }
 }
