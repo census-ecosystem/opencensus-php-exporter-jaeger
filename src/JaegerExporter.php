@@ -143,7 +143,7 @@ class JaegerExporter implements ExporterInterface
             if (count($spanBucket) != 0){
                 $process = new Process([
                     'serviceName' => $this->prefixServiceNameMap[$prefix],
-                    'tags' => $this->spanConverter->convertTags([$this->tags])
+                    'tags' => $this->tags
                 ]);
 
                 $batch = new Batch([
