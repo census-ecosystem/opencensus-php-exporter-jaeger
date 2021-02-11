@@ -126,7 +126,7 @@ class JaegerExporter implements ExporterInterface
             $bucketed = false;
             foreach (array_keys($buckets) as $prefix){
                 // if span name starts with a particular prefix, put the span in that bucket
-                if (strpos($s->name, $prefix) === 0){
+                if (strpos($s->name(), $prefix) === 0){
                     $buckets[$prefix][] = $s;
                     $bucketed = true;
                     break;
