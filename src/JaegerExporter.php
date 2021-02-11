@@ -59,6 +59,11 @@ class JaegerExporter implements ExporterInterface
     private $spanConverter;
 
     /**
+     * @var array
+     */
+    private $tags;
+
+    /**
      * Create a new Jaeger Exporter.
      *
      * @param string $serviceName Name of the traced process/service
@@ -82,11 +87,21 @@ class JaegerExporter implements ExporterInterface
         $this->host = $options['host'];
         $this->port = (int) $options['port'];
         $this->spanConverter = empty($options['spanConverter']) ? new SpanConverter() : $options['spanConverter'];
-        $this->process = new Process([
-            'serviceName' => $serviceName,
-            'tags' => $this->spanConverter->convertTags($options['tags'])
-        ]);
+        $this->tags = $this->spanConverter->convertTags($options['tags']);
         $this->client = $options['client'];
+
+        // if this option is passed, the spans with a particular prefix would be exported
+        // with that serviceName.
+        // eg. prefixServiceNameMap => ['PDO' => 'app_db', 'Predis' => 'app_redis'];
+
+        if (array_key_exists('prefixServiceNameMap', $options)){
+            $this->prefixServiceNameMap = $options['prefixServiceNameMap'];
+        }
+        else{
+            $this->prefixServiceNameMap = [];
+        }
+
+        $this->prefixServiceNameMap += ['_default_' => $serviceName];
     }
 
     /**
@@ -101,13 +116,44 @@ class JaegerExporter implements ExporterInterface
             return false;
         }
 
-        $client = $this->client ?: new UDPClient($this->host, $this->port);
-        $batch = new Batch([
-            'process' => $this->process,
-            'spans' => array_map([$this->spanConverter, 'convertSpan'], $spans)
-        ]);
+        // create different span buckets for each prefix
+        $buckets = [];
+        foreach (array_keys($this->prefixServiceNameMap) as $prefix){
+            $buckets[$prefix] = [];
+        }
 
-        $client->emitBatch($batch);
+        foreach ($spans as $s){
+            $bucketed = false;
+            foreach (array_keys($buckets) as $prefix){
+                // if span name starts with a particular prefix, put the span in that bucket
+                if (strpos($s->name(), $prefix) === 0){
+                    $buckets[$prefix][] = $s;
+                    $bucketed = true;
+                    break;
+                }
+            }
+            if (!$bucketed){
+                $buckets['_default_'][] = $s;
+            }
+        }
+
+        $client = $this->client ?: new UDPClient($this->host, $this->port);
+
+        foreach ($buckets as $prefix => $spanBucket){
+            if (count($spanBucket) != 0){
+                $process = new Process([
+                    'serviceName' => $this->prefixServiceNameMap[$prefix],
+                    'tags' => $this->tags
+                ]);
+
+                $batch = new Batch([
+                    'process' => $process,
+                    'spans' => array_map([$this->spanConverter, 'convertSpan'], $spanBucket)
+                ]);
+                $client->emitBatch($batch);
+            }
+        }
+
         return true;
     }
 }
